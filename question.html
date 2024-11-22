@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Application</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .quiz-container {
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    #next-btn {
+      display: none;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container">
+    <div class="quiz-container text-center">
+      <h1 class="mb-4">Mid preparation Quiz</h1>
+      <div id="subject-select">
+        <h2 class="mb-3">Choose a Subject</h2>
+        <button class="btn btn-primary m-2" onclick="selectSubject('DOtNet')">DotNet</button>
+        <!-- <button class="btn btn-primary m-2" onclick="selectSubject('css')">CSS</button> -->
+        <!-- <button class="btn btn-primary m-2" onclick="selectSubject('general')">General Knowledge</button> -->
+      </div>
+      <div id="quiz" class="hidden">
+        <div id="question" class="mb-4 fs-5 fw-semibold">Question text will appear here.</div>
+        <div class="options d-flex flex-column gap-3">
+          <button class="option btn btn-primary" onclick="selectAnswer(0)">Option 1</button>
+          <button class="option btn btn-primary" onclick="selectAnswer(1)">Option 2</button>
+          <button class="option btn btn-primary" onclick="selectAnswer(2)">Option 3</button>
+          <button class="option btn btn-primary" onclick="selectAnswer(3)">Option 4</button>
+        </div>
+        <div class="d-flex justify-content-between mt-4">
+          <button id="back-btn" class="btn btn-warning" onclick="goBack()">Back</button>
+          <button id="next-btn" class="btn btn-success" onclick="nextQuestion()">Next Question</button>
+        </div>
+      </div>
+      <div id="result" class="hidden mt-4">
+        <h2>Your Score: <span id="score"></span></h2>
+        <button class="btn btn-info mt-3" onclick="restartQuiz()">Restart Quiz</button>
+      </div>
+    </div>
+  </div>
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const quizData = {
+  DOtNet: [
+    {
+      question: ".NET is ____________.?",
+      options: [
+        "a. Platform dependent",
+        "b. Cross-platform",
+        "c. Both of them",
+        "d. None of them",
+      ],
+      correct: 1,
+    },
+    {
+      question: ".NET framework only works on which platform?",
+      options: [
+        "a. Linux",
+        "b. Windows",
+        "c. Unix",
+        "d. iOS",
+      ],
+      correct: 1,
+    },
+    {
+      question: "Which of the following applications can be developed using .NET framework?",
+      options: [
+        "a. Winforms",
+        "b. ADO.NET",
+        "c. Parallel LINQ",
+        "d. All of them",
+      ],
+      correct: 3,
+    },
+    {
+      question: "Architecture of .NET framework is divided into how many parts?",
+      options: [
+        "a. 1",
+        "b. 4",
+        "c. 2",
+        "d. 3",
+      ],
+      correct: 3,
+    },
+    {
+      question: "What is MSIL?",
+      options: [
+        "a. Assembly code",
+        "b. Language code",
+        "c. Non-assembly code",
+        "d. None of them",
+      ],
+      correct: 0,
+    },
+    {
+      question: "Compiled code is stored where?",
+      options: [
+        "a. Assemblies",
+        "b. Folder",
+        "c. Cloud",
+        "d. Local storage",
+      ],
+      correct: 0,
+    },
+    {
+      question: "Compiled code is having which extension?",
+      options: [
+        "a. .exe",
+        "b. .dll",
+        "c. Both of them",
+        "d. None of them",
+      ],
+      correct: 2,
+    },
+    {
+      question: "CIT stands for ______",
+      options: [
+        "a. Common intermediate language",
+        "b. Common independent language",
+        "c. Comment intermediate language",
+        "d. Comment independent language",
+      ],
+      correct: 0,
+    },
+    {
+      question: "JIT stands for _______",
+      options: [
+        "a. Just-independent time compiler",
+        "b. Just-in time compiler",
+        "c. Just-inside time compiler",
+        "d. Just-inner time compiler",
+      ],
+      correct: 1,
+    },
+    {
+      question: "CLS stands for ______",
+      options: [
+        "a. Common language special",
+        "b. Common league special",
+        "c. Common language specification",
+        "d. None of them",
+      ],
+      correct: 2,
+    },
+    {
+      question: "CLI stands for _________",
+      options: [
+        "a. Common language infrastructure",
+        "b. Common language independent",
+        "c. Common language index",
+        "d. None of them",
+      ],
+      correct: 0,
+    },
+    {
+      question: "CTS stands for _______",
+      options: [
+        "a. Common Type special",
+        "b. Common type specification",
+        "c. Common topic special",
+        "d. Common topic specification",
+      ],
+      correct: 1,
+    },
+    {
+      question: "FCL stands for ________",
+      options: [
+        "a. Framework common library",
+        "b. Framework common liberty",
+        "c. Framework class library",
+        "d. Framework class liberty",
+      ],
+      correct: 2,
+    },
+    {
+      question: "A class contains what?",
+      options: [
+        "a. Data members",
+        "b. Member functions",
+        "c. Both of them",
+        "d. None of them",
+      ],
+      correct: 2,
+    },
+    {
+      question: "Objects are known as _________",
+      options: [
+        "a. Instances",
+        "b. Members",
+        "c. Functions",
+        "d. None of them",
+      ],
+      correct: 0,
+    },
+    {
+      question: "State of the object is ______",
+      options: [
+        "a. Method",
+        "b. Unique name",
+        "c. Attributes",
+        "d. None of them",
+      ],
+      correct: 2,
+    },
+    {
+      question: "Behavior of the object is ______",
+      options: [
+        "a. Method",
+        "b. Unique name",
+        "c. Attributes",
+        "d. None of them",
+      ],
+      correct: 0,
+    },
+    {
+      question: "Identity of the object is ________",
+      options: [
+        "a. Method",
+        "b. Unique name",
+        "c. Attributes",
+        "d. None of them",
+      ],
+      correct: 1,
+    },
+    {
+      question: "C# is a _____",
+      options: [
+        "a. OOP",
+        "b. POP",
+        "c. Both of them",
+        "d. None of them",
+      ],
+      correct: 0,
+    },
+    {
+      question: "What is the main aim of the method?",
+      options: [
+        "a. Code reusability",
+        "b. Code redundancy",
+        "c. Code duplicity",
+        "d. None of them",
+      ],
+      correct: 0,
+    },
+    {
+      question: "How many types of access specifiers are there?",
+      options: [
+        "a. 2",
+        "b. 4",
+        "c. 6",
+        "d. 8",
+      ],
+      correct: 2,
+    },
+    {
+      question: "When the constructor is called?",
+      options: [
+        "a. Invoked when an object",
+        "b. Invoked when called",
+        "c. Will not invoked",
+        "d. Invoked whenever",
+      ],
+      correct: 0,
+    },
+    {
+      question: "How many types of constructors are there?",
+      options: [
+        "a. 1",
+        "b. 2",
+        "c. 3",
+        "d. 4",
+      ],
+      correct: 2,
+    },
+    {
+      question: "When we create a constructor without parameters, it is known as a _____ constructor",
+      options: [
+        "a. Parameter less",
+        "b. Parameterized",
+        "c. Default",
+        "d. None of them",
+      ],
+      correct: 0,
+    },
+    {
+      question: "In C#, a constructor can also accept parameters. It is called a ________ constructor",
+      options: [
+        "a. Parameter less",
+        "b. Parameterized",
+        "c. Default",
+        "d. None of them",
+      ],
+      correct: 1,
+    },
+    {
+      question: "If we have not defined a constructor in our class, then the C# will automatically create a _____ constructor.",
+      options: [
+        "a. Parameter less",
+        "b. Parameterized",
+        "c. Default",
+        "d. None of them",
+      ],
+      correct: 2,
+    },
+    {
+      question: "______ class cannot be instantiated",
+      options: [
+        "a. Abstract",
+        "b. Class",
+        "c. Base",
+        "d. Derived",
+      ],
+      correct: 0,
+    },
+    {
+      question: "How many times of polymorphism are there?",
+      options: [
+        "a. 1",
+        "b. 2",
+        "c. 3",
+        "d. 4",
+      ],
+      correct: 1,
+    },
+    {
+      question: "Compile time polymorphism are of two types ______",
+      options: [
+        "a. Method",
+        "b. Operator",
+        "c. Class",
+        "d. A and B",
+        "e. A and C",
+        "f. B and C",
+      ],
+      correct: 3,
+    },
+    {
+      question: "How many types of polymorphism you have studied?",
+      options: [
+        "a. 1",
+        "b. 3",
+        "c. 5",
+        "d. 7",
+      ],
+      correct: 1,
+    },
+  ],
+  ADO_NET: [
+    {
+      question: "ADO stands for:",
+      options: [
+        "a. Active Dataset Object",
+        "b. Access Dataset Object",
+        "c. ActiveX Database Object",
+        "d. Access Database Object",
+      ],
+      correct: 2,
+    },
+    {
+      question: "Which of the following is considered an ADO.NET application?",
+      options: [
+        "a. ASP.NET web application",
+        "b. Console application",
+        "c. Windows application",
+        "d. All of the above",
+      ],
+      correct: 3,
+    },
+    {
+      question: "Which of the following is NOT an ADO.NET object?",
+      options: [
+        "a. Connection",
+        "b. Request",
+        "c. Command",
+        "d. DataReader",
+      ],
+      correct: 1,
+    },
+    {
+      question: "What class is used to establish a SQL Server connection?",
+      options: [
+        "a. SqlCommand",
+        "b. SqlConnection",
+        "c. SqlDataAdapter",
+        "d. SqlDataReader",
+      ],
+      correct: 1,
+    },
+    {
+      question: "Which class is responsible for executing SQL queries?",
+      options: [
+        "a. SqlCommand",
+        "b. SqlConnection",
+        "c. SqlDataAdapter",
+        "d. SqlDataReader",
+      ],
+      correct: 0,
+    },
+    {
+      question: "What command is used to insert data into the database?",
+      options: [
+        "a. SqlCommand",
+        "b. SqlConnection",
+        "c. SqlDataAdapter",
+        "d. SqlDataReader",
+      ],
+      correct: 0,
+    },
+    {
+      question: "Which command is used to retrieve rows from a database?",
+      options: [
+        "a. SqlCommand",
+        "b. SqlConnection",
+        "c. SqlDataAdapter",
+        "d. SqlDataReader",
+      ],
+      correct: 3,
+    },
+    {
+      question: "Which of the following is NOT an ADO.NET data provider?",
+      options: [
+        "a. OLEDB",
+        "b. SqlClient",
+        "c. SqlServer",
+        "d. ODBC",
+      ],
+      correct: 2,
+    },
+    {
+      question: "How many types of connection architectures exist in ADO.NET?",
+      options: [
+        "a. 1",
+        "b. 2",
+        "c. 3",
+        "d. 4",
+      ],
+      correct: 1,
+    },
+    {
+      question: "In which type of connection architecture is the DataReader used?",
+      options: [
+        "a. Connected",
+        "b. Disconnected",
+        "c. Neither",
+        "d. Both",
+      ],
+      correct: 0,
+    },
+    {
+      question: "Which type of connection architecture is used when working with a database?",
+      options: [
+        "a. Connected",
+        "b. Disconnected",
+        "c. Neither",
+        "d. Both",
+      ],
+      correct: 0,
+    },
+    {
+      question: "The Dataset is used with which type of connection architecture?",
+      options: [
+        "a. Connected",
+        "b. Disconnected",
+        "c. Neither",
+        "d. Both",
+      ],
+      correct: 1,
+    },
+    {
+      question: "How many features of ADO.NET have you studied?",
+      options: [
+        "a. 1",
+        "b. 3",
+        "c. 5",
+        "d. 7",
+      ],
+      correct: 3,
+    },
+    {
+      question: "Which ADO.NET feature helps reduce risk and makes it easier to add new features?",
+      options: [
+        "a. Maintainability",
+        "b. Interoperability",
+        "c. Scalability",
+        "d. None of the above",
+      ],
+      correct: 0,
+    },
+    {
+      question: "ADO.NET acts as a bridge between front-end controls and the back-end database.",
+      options: [
+        "a. True",
+        "b. False",
+        "c. Partially true",
+        "d. Cannot say",
+      ],
+      correct: 0,
+    },
+    {
+      question: "ADO.NET provides communication between:",
+      options: [
+        "a. DataObject and DataSet",
+        "b. DataObject and DataSource",
+        "c. DataSet and Database",
+        "d. DataSet and DataSource",
+      ],
+      correct: 3,
+    },
+    {
+      question: "To use the .NET Framework Data Provider for SQL Server, an application must reference which namespace?",
+      options: [
+        "a. System.Data.Client",
+        "b. System.Data.SqlClient",
+        "c. System.Data.Sql",
+        "d. None of the above",
+      ],
+      correct: 1,
+    },
+    {
+      question: "A Dataset is a collection of:",
+      options: [
+        "a. Data objects",
+        "b. SQL commands",
+        "c. Data tables",
+        "d. Data rows",
+      ],
+      correct: 2,
+    },
+    {
+      question: "Which of the following is a property of the DataGrid control?",
+      options: [
+        "a. DataMember",
+        "b. DataSource",
+        "c. DataQuery",
+        "d. All of the above",
+      ],
+      correct: 3,
+    },
+    {
+      question: "Which of the following is true about an ADO.NET DataSet?",
+      options: [
+        "a. DataSet provides a disconnected view of the data source.",
+        "b. DataSet allows storing data from multiple tables and sources.",
+        "c. We can establish relationships between tables in a DataSet.",
+        "d. All of the above",
+      ],
+      correct: 3,
+    },
+    {
+      question: "Which ADO.NET object provides a tabular view of data?",
+      options: [
+        "a. DataSet",
+        "b. DataTable",
+        "c. DataView",
+        "d. SqlDataReader",
+      ],
+      correct: 2,
+    },
+    {
+      question: "What is the purpose of the ConnectionString property in ADO.NET?",
+      options: [
+        "a. To specify the data provider being used",
+        "b. To establish a connection to the database",
+        "c. To define the SQL query to execute",
+        "d. To store metadata about the database schema",
+      ],
+      correct: 1,
+    },
+    {
+      question: "Which ADO.NET object manages database transactions?",
+      options: [
+        "a. SqlConnection",
+        "b. SqlDataAdapter",
+        "c. SqlCommand",
+        "d. SqlTransaction",
+      ],
+      correct: 3,
+    },
+    {
+      question: "Which method is used to close a DataReader object in ADO.NET?",
+      options: [
+        "a. Close()",
+        "b. Dispose()",
+        "c. ShutDown()",
+        "d. None",
+      ],
+      correct: 0,
+    },
+    {
+      question: "The __________ method of the Command object executes the command and returns the number of rows affected.",
+      options: [
+        "a. ExecuteNonQuery()",
+        "b. ExecuteScalar()",
+        "c. ExecuteReader()",
+        "d. ExecuteCommand()",
+      ],
+      correct: 0,
+    },
+    {
+      question: "Which of the following are properties of the Connection object?",
+      options: [
+        "i) Connection",
+        "ii) Integrated Security",
+        "iii) Data Source",
+        "a. i and ii only",
+        "b. ii and iii only",
+        "c. i and iii only",
+        "d. All of the above",
+      ],
+      correct: 3,
+    },
+    {
+      question: "Which function is NOT supported by SqlDataAdapter?",
+      options: [
+        "a. Fill()",
+        "b. Update()",
+        "c. Dispose()",
+        "d. Read()",
+      ],
+      correct: 3,
+    },
+    {
+      question: "Which of the following databases is NOT supported by ADO.NET?",
+      options: [
+        "a. SQL",
+        "b. OLEDB",
+        "c. SeSQL",
+        "d. Access",
+      ],
+      correct: 2,
+    },
+    {
+      question: "In a disconnected architecture, data is retrieved from:",
+      options: [
+        "a. DataTable",
+        "b. DataSet",
+        "c. DataReader",
+        "d. DataAdapter",
+      ],
+      correct: 1,
+    },
+    {
+      question: "DataReader retrieves data in which mode?",
+      options: [
+        "a. Read and write",
+        "b. Write-only",
+        "c. Read-only",
+        "d. Neither read nor write",
+      ],
+      correct: 2,
+    },
+    {
+      question: "What is ASP.NET Web API?",
+      options: [
+        "a. A framework for building dynamic websites",
+        "b. A framework for creating HTTP-based services that can be consumed by various clients like browsers and mobile devices",
+        "c. A library for managing databases",
+        "d. A tool for building Windows desktop apps",
+      ],
+      correct: 1,
+    },
+    {
+      question: "Which is not an HTTP method?",
+      options: ["a. GET", "b. PUT", "c. POST", "d. COPY"],
+      correct: 3,
+    },
+    {
+      question: "Which is not an HTTP method?",
+      options: ["a. POST", "b. GET", "c. DELETE", "d. ATTACH"],
+      correct: 3,
+    },
+    {
+      question: "Which HTTP method should be idempotent, meaning that multiple executions should result in the same server state?",
+      options: ["a. GET", "b. POST", "c. PUT", "d. PATCH"],
+      correct: 2,
+    },
+    {
+      question: "In ASP.NET Web API, which class does a controller typically inherit from?",
+      options: [
+        "a. ApiController",
+        "b. Controller",
+        "c. BaseController",
+        "d. WebApiController",
+      ],
+      correct: 0,
+    },
+    {
+      question: "Which attribute is used to specify a route at the controller or action level in ASP.NET Web API?",
+      options: ["a. [HttpRoute]", "b. [RoutePrefix]", "c. [Route]", "d. [ApiAction]"],
+      correct: 2,
+    },
+    {
+      question: "Where is the Web API routing configuration typically set up?",
+      options: [
+        "a. Global.asax",
+        "b. Web.config",
+        "c. App_Start folder",
+        "d. ControllerBase",
+      ],
+      correct: 2,
+    },
+    {
+      question: "In a RESTful API, REST stands for:",
+      options: [
+        "a. Representational State Transfer",
+        "b. Response State Transfer",
+        "c. Request State Transfer",
+        "d. Representational System Transfer",
+      ],
+      correct: 0,
+    },
+    {
+      question: "What is the default route template in Web API?",
+      options: [
+        "a. api/controller/id",
+        "b. controller/id",
+        "c. controller/api/id",
+        "d. id/controller/api",
+      ],
+      correct: 0,
+    },
+    {
+      question: "OWIN stands for:",
+      options: [
+        "a. Open Web Interface",
+        "b. Opposite Web Interface",
+        "c. Open Web Integration",
+        "d. Open Whatsapp Integration",
+      ],
+      correct: 0,
+    },
+    {
+      question: "The purpose of an Authorization filter is to:",
+      options: [
+        "a. Validate the request before executing business logic",
+        "b. Bind complex data types from the request body",
+        "c. Bind parameters only from headers",
+        "d. Prevent binding of custom types",
+      ],
+      correct: 0,
+    },
+    {
+      question: "In ASP.NET Web API, which attribute forces a parameter to be read from the request body?",
+      options: ["a. [FromBody]", "b. [FromUri]", "c. [FromFormBody]", "d. [FromQuery]"],
+      correct: 0,
+    },
+    {
+      question: "CORS stands for:",
+      options: [
+        "a. Compiled Origin Resource Sharing",
+        "b. Cross-Origin Resource Sharing",
+        "c. Custom Origin Resource Sharing",
+        "d. Client-Origin Resource Sharing",
+      ],
+      correct: 1,
+    },
+    {
+      question: "What is the purpose of the Authorize attribute in ASP.NET Web API?",
+      options: [
+        "a. To validate the content type of the request",
+        "b. To ensure the request is from an authorized source",
+        "c. To encrypt the response data",
+        "d. To log request and response details",
+      ],
+      correct: 1,
+    },
+    {
+      question: "Which filter in ASP.NET Web API is executed last in the pipeline?",
+      options: [
+        "a. Authorization filters",
+        "b. Action filters",
+        "c. Exception filters",
+        "d. Response filters",
+      ],
+      correct: 2,
+    },
+    {
+      question: "In form-based authentication in ASP.NET Web API, what does the [Authorize] attribute do?",
+      options: [
+        "a. Encrypts form data",
+        "b. Limits access to authenticated users",
+        "c. Automatically logs in the user",
+        "d. Validates the form's data",
+      ],
+      correct: 1,
+    },
+    {
+      question: "What is a best practice to secure form submissions in ASP.NET Web API?",
+      options: [
+        "a. Submit forms via GET requests",
+        "b. Store passwords in plain text in the database",
+        "c. Use HTTPS to secure data transmission",
+        "d. Implement a CAPTCHA on every form",
+      ],
+      correct: 2,
+    },
+    {
+      question: "Which setting in the Web.config file enables Windows Authentication in ASP.NET Web API?",
+      options: [
+        '<authentication mode="Forms" />',
+        '<authentication mode="Windows" />',
+        '<authentication mode="None" />',
+        '<authorization allow="*" />',
+      ],
+      correct: 1,
+    },
+    {
+      question: "How many types of routing are supported in Web API?",
+      options: ["a. 4", "b. 3", "c. 2", "d. 1"],
+      correct: 2,
+    },
+    {
+      question: "In Web API, route templates are used to determine the controller and action method in which type of routing?",
+      options: [
+        "a. Convention-based routing",
+        "b. Attribute-based routing",
+        "c. Both convention-based and attribute-based routing",
+        "d. None of the above",
+      ],
+      correct: 2,
+    },
+  ],
+      css: [
+        {
+          question: "What does CSS stand for?",
+          options: [
+            "Creative Style Sheets",
+            "Cascading Style Sheets",
+            "Computer Style Sheets",
+            "None of the above",
+          ],
+          correct: 1,
+        },
+        {
+          question: "Which CSS property controls the text size?",
+          options: ["font-style", "text-size", "font-size", "text-style"],
+          correct: 2,
+        },
+      ],
+      general: [
+        {
+          question: "Who is the Prime Minister of India?",
+          options: ["Jawaharlal Nehru", "Narendra Modi", "Rahul Gandhi", "Vivek Sharma"],
+          correct: 1,
+        },
+        {
+          question: "Which is the largest planet in our solar system?",
+          options: ["Earth", "Mars", "Jupiter", "Saturn"],
+          correct: 2,
+        },
+      ],
+    };
+    
+    let currentSubject = null;
+    let currentQuestionIndex = 0;
+    let score = 0;
+    
+    const questionEl = document.getElementById("question");
+    const optionButtons = document.querySelectorAll(".option");
+    const nextButton = document.getElementById("next-btn");
+    const resultEl = document.getElementById("result");
+    const scoreEl = document.getElementById("score");
+    const quizEl = document.getElementById("quiz");
+    const subjectSelectEl = document.getElementById("subject-select");
+    
+    function selectSubject(subject) {
+      currentSubject = subject;
+      subjectSelectEl.classList.add("hidden");
+      quizEl.classList.remove("hidden");
+      restartQuiz();
+    }
+    
+    function loadQuestion() {
+      const currentQuestion = quizData[currentSubject][currentQuestionIndex];
+      questionEl.textContent = currentQuestion.question;
+      optionButtons.forEach((button, index) => {
+        button.textContent = currentQuestion.options[index];
+        button.classList.remove("correct", "wrong");
+        button.disabled = false;
+      });
+    }
+    
+    function selectAnswer(selectedIndex) {
+      const currentQuestion = quizData[currentSubject][currentQuestionIndex];
+      if (selectedIndex === currentQuestion.correct) {
+        optionButtons[selectedIndex].classList.add("correct");
+        score++;
+      } else {
+        optionButtons[selectedIndex].classList.add("wrong");
+        optionButtons[currentQuestion.correct].classList.add("correct");
+      }
+      optionButtons.forEach((button) => (button.disabled = true));
+      nextButton.style.display = "block";
+    }
+    
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData[currentSubject].length) {
+        loadQuestion();
+        nextButton.style.display = "none";
+      } else {
+        showResult();
+      }
+    }
+    
+    function showResult() {
+      quizEl.classList.add("hidden");
+      resultEl.classList.remove("hidden");
+      scoreEl.textContent = `${score} / ${quizData[currentSubject].length}`;
+    }
+    
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      resultEl.classList.add("hidden");
+      quizEl.classList.remove("hidden");
+      nextButton.style.display = "none";
+      loadQuestion();
+    }
+    
+    function goBack() {
+      quizEl.classList.add("hidden");
+      subjectSelectEl.classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
